@@ -23,6 +23,8 @@ DHT dht(D1, DHT11);
  */
 LedControl lc = LedControl(D7, D5, D2, 8);
 
+void showOnLED(float temperature, float humidity);
+
 void setup()
 {
   // 初始化温湿度传感器
@@ -44,15 +46,22 @@ void loop()
   float h = dht.readHumidity();
   Serial.printf("%.1f\t%.0f%%\n", t, h);
 
-  // 有时候会测量失败，特别是刚启动的时候，如果失败就不更新显示
-  if (isnan(t) || isnan(h))
+  // 有时候会测量失败，特别是刚启动的时候。只在获取成功时显示
+  if (!isnan(t) && !isnan(h))
   {
-    delay(1000);
-    return;
+    showOnLED(t, h);
   }
 
+  delay(1000);
+}
+
+/**
+ * LED数码管输出函数
+ */
+void showOnLED(float temperature, float humidity)
+{
   // 显示温度，保留1位小数
-  int td = (t + 0.05) * 10;
+  int td = (temperature + 0.05) * 10;
   // 显示在左边，从右数第5位开始展示
   for (int i = 5; i < 8; td /= 10, i++)
   {
@@ -74,7 +83,7 @@ void loop()
   lc.setChar(0, 4, 'C', false);
 
   // 湿度测量分辨率低，所以输出整数就行
-  int hd = h;
+  int hd = humidity;
   for (int i = 1; i < 4; hd /= 10, i++)
   {
     if (hd > 0)
@@ -88,6 +97,4 @@ void loop()
   }
   // 输出一个H代表湿度
   lc.setChar(0, 0, 'H', false);
-
-  delay(1000);
 }

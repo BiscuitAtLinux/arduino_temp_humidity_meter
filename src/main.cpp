@@ -1,9 +1,11 @@
 /**
- * 基于Arduino的温湿度计，通过串口和数码管输出结果
+ * 基于Arduino的温湿度计，通过串口和数码管输出结果，并通过MQTT发送
  */
 #include <Arduino.h>
 #include <DHT_U.h>
 #include <LedControl.h>
+// 网络相关定义都在这里
+#include "net.h"
 
 /**
  * 温湿度传感器 DHT11 1-wire连接方式
@@ -38,6 +40,19 @@ void setup()
   // 亮度可以低一些，晚上不耀眼
   lc.setIntensity(0, 0);
   lc.clearDisplay(0);
+
+  // 显示连接前的等待
+  lc.setChar(0, 7, 'C', false);
+  lc.setChar(0, 6, 'o', false);
+  lc.setChar(0, 5, 'n', false);
+  lc.setChar(0, 4, 'n', false);
+  lc.setChar(0, 3, '.', false);
+  lc.setChar(0, 2, '.', false);
+  lc.setChar(0, 1, '.', false);
+  lc.setChar(0, 0, '.', false);
+
+  // 连接网络相关
+  connect();
 }
 
 void loop()
@@ -51,6 +66,9 @@ void loop()
   {
     showOnLED(t, h);
   }
+
+  // 发送到MQTT
+  sendToMQTT(t, h);
 
   delay(1000);
 }

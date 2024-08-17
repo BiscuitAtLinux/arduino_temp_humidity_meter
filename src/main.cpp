@@ -6,6 +6,8 @@
 #include <LedControl.h>
 // 网络相关定义都在这里
 #include "net.h"
+// 温湿度校准
+#include "calibration.h"
 
 /**
  * 温湿度传感器 DHT11 1-wire连接方式
@@ -57,9 +59,14 @@ void setup()
 
 void loop()
 {
+  // 温湿度原始数据
   float t = dht.readTemperature();
   float h = dht.readHumidity();
-  Serial.printf("%.1f\t%.0f%%\n", t, h);
+  // 温湿度校准
+  t = TEMP_A * t + TEMP_B;
+  h = HUMIDITY_A * h + HUMIDITY_B;
+  // 串口输出调试数据
+  Serial.printf("%.2f\t%.1f%%\n", t, h);
 
   // 有时候会测量失败，特别是刚启动的时候。只在获取成功时显示
   if (!isnan(t) && !isnan(h))

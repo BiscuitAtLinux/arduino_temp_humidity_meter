@@ -20,6 +20,7 @@ void connect()
   }
 
   Serial.print("\nconnecting mqtt ...");
+  client.setKeepAlive(MQTT_SEND_INTERVAL_S + 5); // 连接前设置，避免较长的上报间隔导致连接断开
   client.begin(MQTT_HOST, MQTT_PORT, wifi);
   while (!client.connect(MQTT_ID, "", ""))
   {
@@ -47,7 +48,7 @@ void sendToMQTT(float temperature, float humidity)
   }
   else
   {
-    Serial.printf("MQTT fail, cost %lu ms\n", millis() - start);
+    Serial.printf("MQTT fail, cost %lu ms, err %d\n", millis() - start, client.lastError());
     failCount++;
     // 如果累计失败3次，重新执行连接
     if (failCount >= 3)

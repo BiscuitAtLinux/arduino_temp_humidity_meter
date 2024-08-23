@@ -18,8 +18,8 @@ const char MQTT_HOST[] = "bemfa.com";
 const int MQTT_PORT = 9501;
 const char MQTT_ID[] = "";
 const char MQTT_TOPIC[] = "";
-// 发送间隔(s)，没必要每次更新温度都发送，但是频率也不能太低，测试30s会导致连接断开
-const int MQTT_SEND_INTERVAL_S = 10;
+// 发送间隔(s)，没必要每次更新温度都发送
+const int MQTT_SEND_INTERVAL_S = 30;
 
 // 初始化WiFi及MQTT
 void connect();
